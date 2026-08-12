@@ -18,6 +18,7 @@ export default class TarefaController{
             });
             const novaTarefa = await tarefa.save();
             res.status(200).json({message: "Tarefa criada com sucesso", novaTarefa}); 
+            return;
         } 
         catch (error)
         {
@@ -25,4 +26,19 @@ export default class TarefaController{
         }
 
     } // fim create
+
+    static async getAll(req, res){
+        try
+        {
+            const tarefas = await Tarefa.find(); 
+            return res.status(200).json({message: "Buscar tarefas com sucesso", tarefas});
+
+        } 
+        catch (error)
+        {
+            return res.status(500).json({message: "Erro ao buscar tarefas", error}); 
+        }
+
+    } // fim do getAll 
+
 } // fim do export
