@@ -11,14 +11,14 @@ const swaggerDocument = require("./swagger-output.json");
 const app = new express();
 
 // comunicação entre front e back usar json 
-app.use(express.json);
+app.use(express.json());
 app.use(cors({
     credentials: true, 
     origin: "http://localhost:3000"
 })); 
 
 // Obrigatoriamente o swagger deve vir antes das rotas 
-app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument))
+app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 // Ligar express com as rotas
 app.use("/ToDo", routes)
 app.listen(5000); // Em qual porta o back vai rodar 

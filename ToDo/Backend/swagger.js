@@ -10,5 +10,5 @@ const doc = {
 // Nome do arquivo que será gerado automaticamente
 const outputFile = './swagger-output.json'; 
 // Caminho para as rotas
-const routesFile = ['./Routes/routes.js']
+const routesFile = ['./Routes/routes.js'];
 swaggerAutogen()(outputFile, routesFile, doc); 
