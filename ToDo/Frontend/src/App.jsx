@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {Routes, Route} from "react-router-dom";
-import TodoForm from "./Pages/TodoForm";
+import TodoForm from "./Pages/TodoForm.jsx";
 //import TodoList from "./Pages/TodoList";
 import logoTodo from './assets/logo-todo.png';
 export default function App() {

@@ -8,6 +8,7 @@ const api = axios.create({
 
 export const getTodos=()=>api.get("/getAll");
 
-export const CreateTodo=()=>api.post("/create");
+export const CreateTodo=()=>api.post("/Create");
 
 export default api; 
+

@@ -1,7 +1,8 @@
 import React, {useState} from "react";
-import { useNavigate } from "react-router-dom";
-import { CreateTodo } from "../api/Todo.jsx";
+import {useNavigate} from "react-router-dom";
+import {CreateTodo} from "../api/Todo.jsx";
 export default function TodoForm() {
+    console.log("Entre aqui")
     const[titulo,setTitulo] = useState(''); 
     const[descricao,setDescricao] = useState(''); 
     const[dataLimite,setDataLimite] = useState(''); 
@@ -18,7 +19,7 @@ export default function TodoForm() {
             alert("Erro ao criar uma tarefa:" + (error.message || error));
         }
         finally{
-            sestSaving(false)
+            setSaving(false)
         }
     }
     return(
