@@ -1,3 +1,4 @@
+import "dotenv/config"; // Tem que ser a primeira linha no index.js 
 import express from "express"; 
 import cors from "cors"; 
 // Incluir as rotas 
@@ -5,6 +6,10 @@ import swaggerUI from "swagger-ui-express";
 import { createRequire } from "module";
 import routesTarefa from "./Routes/routesTarefa.js";
 import routesUsuario from "./Routes/routesUsuario.js";
+import cookieParser from "cookie-parser";
+
+const PORT = process.env.PORT || 5000; 
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173"
 
 // Suporte para importar arquivos json usando ESModules
 const require = createRequire(import.meta.url); 
@@ -13,6 +18,7 @@ const app = new express();
 
 // comunicação entre front e back usar json 
 app.use(express.json());
+app.use(cookieParser()); 
 app.use(cors({
     credentials: true, 
     origin: "http://localhost:5173"
@@ -23,4 +29,4 @@ app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 // Ligar express com as rotas
 app.use("/ToDo", routesTarefa);
 app.use("/ToDo", routesUsuario);
-app.listen(5000); // Em qual porta o back vai rodar 
+app.listen(PORT); // Em qual porta o back vai rodar 
