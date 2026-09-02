@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "API ToDo List",
-    "description": "Documentação para a geração automática dos testes com swagger",
+    "description": "Documentação para a geração automática dos testes",
     "version": "1.0.0"
   },
   "host": "localhost:5000",
@@ -37,6 +37,42 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "senha": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "422": {
             "description": "Unprocessable Entity"

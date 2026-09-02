@@ -27,7 +27,7 @@ export default function App() {
       }
     };
 
-    checkUserSession();
+    checkUserSession(); // Conferir se ele está logado 
   }, []);
 
   const handleLogout = async () => {

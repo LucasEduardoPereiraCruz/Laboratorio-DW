@@ -1,8 +1,13 @@
-import {Router} from "express"; 
-import UsuarioController from "../Controllers/UsuarioController.js"
+import {Router} from "express";
+import UsuarioController from "../Controllers/UsuarioController.js";
+import UserMiddleware from "../Middleware/UserMiddleware.js";
+const routesUsuario = new Router();
 
-const routesUsuario = new Router()
+routesUsuario.post("/createUsuario", UsuarioController.Create);
+routesUsuario.post("/login", UsuarioController.Login);
+routesUsuario.post("/logout", UsuarioController.Logout);
+routesUsuario.post("/resetPassword", UsuarioController.ResetPassword);
+routesUsuario.post("/forgotPassword", UsuarioController.ForgotPassword);
+routesUsuario.get("/me", UserMiddleware, UsuarioController.Profile);
 
-routesUsuario.post("/createUsuario", UsuarioController.Create); // Após o ponto temos que usar o verbo/requisição HTTP
-routesUsuario.post("/login", UsuarioController.Login); // Após o ponto temos que usar o verbo/requisição HTTP
-export default routesUsuario; 
+export default routesUsuario;
