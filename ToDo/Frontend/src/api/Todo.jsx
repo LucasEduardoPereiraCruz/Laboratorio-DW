@@ -1,3 +1,4 @@
+// Arquivos de rotas do backend 
 import axios from "axios";
 const api = axios.create({
     baseURL:"http://localhost:5000/ToDo",
@@ -14,5 +15,6 @@ export const  logout=()=>api.post("/logout"); // Está no app.jsx
 export const  reset=(payload)=>api.post("/resetPassword", payload); // Criar pag no front - TAREFA!! 
 export const  forgot=(payload)=>api.post("/forgotPassword", payload);
 export const  getProfile = () => api.get("/me");
+export const  getUsers = () => api.get("/getAllUsers");
 
 export default api;
