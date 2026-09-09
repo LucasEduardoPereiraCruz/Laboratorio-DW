@@ -134,10 +134,10 @@ export default function App() {
                   }
                 />
                 <Route
-                  path="forgot"
+                  path="forgot" // O parâmetro na rota (path="reset-password/:token"): É o que avisa o React Router que essa rota exige uma variável dinâmica obrigatória. Sem os dois-pontos (:), o roteador procuraria uma página com o nome literal de :token em vez de aceitar códigos variados.
                   element={
                     isAuthenticated ? (
-                      <Navigate to="/todos" replace />
+                      <Navigate to="/todos" replace /> // Replace substitui a URL atual no histórico de navegação, em vez de add uma nova entrada 
                     ) : (
                       <EsqueceuSenha />
                     )
@@ -161,3 +161,7 @@ export default function App() {
     </Routes>
   );
 }
+
+// Servem para proteção de rotas (Auth Guard), impedem do usuário logado acesse páginas como cadastro, recuperar senha... 
+// isAuthenticated ? serve para ver se o usuário está autenticado
+// Se estiver logado ele joga para a página inicial, caso não, ele renderiza as telas de cadastro, reset e esqueceu senha normalmente 

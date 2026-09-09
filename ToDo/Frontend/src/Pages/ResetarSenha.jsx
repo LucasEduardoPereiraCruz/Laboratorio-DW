@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import React, { useState } from "react"; // useState permite criar e gerenciar estado (dados que mudam com o tempo) - Retorna valor atual e função da atualização 
+// useParams serve para ler parâmetros dinâmicos da URL 
+import { Link, useNavigate, useParams } from "react-router-dom"; // useParams precisamos passar pq sem ele o JS trava e fala que a função não foi definida 
 import { reset } from "../api/Todo";
 
 
 export default function ResetarSenha() {
+    // Pega o token dinâmico diretamente da URL (ex: /reset-password/:token)
     const { token } = useParams(); // Pega o token da URL
     const [novaSenha, setNovaSenha] = useState("");
     const [loading, setLoading] = useState(false);
@@ -13,9 +15,10 @@ export default function ResetarSenha() {
         e.preventDefault();
         setLoading(true);
         try {
+            // Envia o token capturado da URL junto com a nova senha digitada para o backend
             await reset({ token, novaSenha });
             alert("Senha redefinida com sucesso!");
-            navigate("/login");
+            navigate("/login"); // Redireciona para o login após alterar com sucesso
         } catch (error) {
             alert("Erro ao redefinir senha: " + (error.response?.data?.message || error.message));
         } finally {

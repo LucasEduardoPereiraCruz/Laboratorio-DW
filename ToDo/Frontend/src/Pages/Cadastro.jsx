@@ -3,23 +3,29 @@ import { Link, useNavigate } from "react-router-dom";
 import { createUser } from "../api/Todo";
 
 export default function Cadastro() {
+    // Estados para armazenar o que o usuário digita nos inputs
     const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
+    // Estado de controle para evitar duplo clique enquanto envia os dados
     const [loading, setLoading] = useState(false);
+    // Hook (Gancho) do React Router para redirecionar o usuário para outra tela (ex: login)
     const navigate = useNavigate();
 
-
+    // Função executada quando o formulário é enviado
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+        e.preventDefault(); // Evita que a página recarregue sozinha
+        setLoading(true); // Ativa o estado de carregamento (trava os inputs/botão)
         try {
+            // Chama a API de cadastro enviando os dados preenchidos
             await createUser({ nome, email, senha }); // Usando createUser
             alert("Usuário cadastrado com sucesso!");
-            navigate("/login");
+            navigate("/login"); // Manda o usuário para a tela de login após o sucesso 
         } catch (error) {
+            // Trata erros vindo do backend ou de rede
             alert("Erro ao cadastrar: " + (error.response?.data?.message || error.message || error));
         } finally {
+            // Desativa o carregamento independentemente de dar certo ou errado
             setLoading(false);
         }
     };
@@ -35,9 +41,9 @@ export default function Cadastro() {
                     <input
                         type="text"
                         required
-                        disabled={loading}
+                        disabled={loading} // Trava o input enquanto está enviando     
                         value={nome}
-                        onChange={(e) => setNome(e.target.value)}
+                        onChange={(e) => setNome(e.target.value)} // Atualiza o estado conforme o usuário digita 
                         placeholder="Seu Nome"
                         className="w-full border border-gray-300 rounded-lg px-3.5 py-2.5 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:bg-gray-100"
                     />

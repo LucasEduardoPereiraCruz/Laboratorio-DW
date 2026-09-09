@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { forgot } from "../api/Todo";
 
 export default function EsqueceuSenha() {
+    // Estados para o e-mail, controle de carregamento e mensagem de sucesso/aviso
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
     const [mensagem, setMensagem] = useState("");
@@ -11,10 +12,12 @@ export default function EsqueceuSenha() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setMensagem("");
+        setMensagem(""); // Limpa mensagens anteriores ao tentar de novo
         try {
+            // Envia o e-mail para o backend gerar e disparar o token de recuperação
             const response = await forgot({ email });
-            setMensagem(response.data.message || "Se o e-mail estiver cadastrado, um link será enviado.");
+            // Exibe a mensagem que veio da API na tela
+            setMensagem(response.data.message || "Se o e-mail estiver cadastrado, um link será enviado");
         } catch (error) {
             alert("Erro ao processar solicitação: " + (error.response?.data?.message || error.message));
         } finally {
