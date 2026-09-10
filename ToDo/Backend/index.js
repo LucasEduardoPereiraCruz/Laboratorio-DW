@@ -8,7 +8,7 @@ import registerChatSocket from "./Socket/registerChatSocket.js";
 import cors from "cors";
 import routesTarefa from "./Routes/routesTarefa.js";
 import routesUsuario from "./Routes/routesUsuario.js";
-import routesChat from "./Routes/RoutesChat.js";
+import routesChat from "./Routes/routesChat.js";
 import swaggerUi from "swagger-ui-express";
 import { createRequire } from "module";
 import cookieParser from "cookie-parser";
