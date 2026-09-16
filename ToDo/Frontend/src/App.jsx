@@ -7,30 +7,32 @@ import TodoForm from "./Pages/TodoForm";
 import logoTodo from "./assets/logo-todo.png";
 import { logout, getProfile } from "./api/Todo.jsx";
 import Cadastro from "./Pages/Cadastro.jsx";
-import EsqueceuSenha from "./Pages/EsqueceuSenha.jsx";
+import EsqueceuSenha from "./Pages/EsqueceuSenha.jsx"
 import ResetarSenha from "./Pages/ResetarSenha.jsx";
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [usuarioLogado, setUsuarioLogado] = useState(null); 
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const checkUserSession = async () => {
+    try {
+      const response = await getProfile();
+      if (response.status === 200) {
+        setIsAuthenticated(true);
+        setUsuarioLogado(response.data.usuario || response.data); 
+      }
+    } catch (error) {
+      console.log("Sessão não encontrada ou expirada:", error);
+      setIsAuthenticated(false);
+      setUsuarioLogado(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const checkUserSession = async () => {
-      try {
-        const response = await getProfile();
-        if (response.status === 200) {
-          setIsAuthenticated(true);
-        }
-      } catch (error) {
-        console.log("Sessão não encontrada ou expirada:", error);
-        setIsAuthenticated(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     checkUserSession();
   }, []);
 
@@ -41,10 +43,10 @@ export default function App() {
       console.error("Erro ao fazer logout:", error);
     } finally {
       setIsAuthenticated(false);
+      setUsuarioLogado(null);
       navigate("/");
     }
   };
-
 
   if (loading) {
     return (
@@ -56,7 +58,6 @@ export default function App() {
 
   return (
     <Routes>
-
       <Route
         path="/"
         element={
@@ -101,7 +102,11 @@ export default function App() {
                 <Route
                   path="todos"
                   element={
-                    isAuthenticated ? <TodoList /> : <Navigate to="/login" replace />
+                    isAuthenticated ? (
+                      <TodoList usuarioLogado={usuarioLogado} /> 
+                    ) : (
+                      <Navigate to="/login" replace />
+                    )
                   }
                 />
                 <Route
@@ -116,10 +121,12 @@ export default function App() {
                     isAuthenticated ? (
                       <Navigate to="/todos" replace />
                     ) : (
-                      <Login onLoginSuccess={() => {
-                        setIsAuthenticated(true);
-                        navigate("/todos");
-                      }} />
+                      <Login
+                        onLoginSuccess={() => {
+                          checkUserSession(); // 🟢 Recarrega a sessão ao logar com sucesso
+                          navigate("/todos");
+                        }}
+                      />
                     )
                   }
                 />
@@ -161,7 +168,3 @@ export default function App() {
     </Routes>
   );
 }
-
-// Servem para proteção de rotas (Auth Guard), impedem do usuário logado acesse páginas como cadastro, recuperar senha... 
-// isAuthenticated ? serve para ver se o usuário está autenticado
-// Se estiver logado ele joga para a página inicial, caso não, ele renderiza as telas de cadastro, reset e esqueceu senha normalmente 

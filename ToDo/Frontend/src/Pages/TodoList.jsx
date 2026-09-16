@@ -3,7 +3,7 @@ import { getTodos } from "../api/Todo.jsx";
 import TodoItem from "../Components/TodoItem.jsx";
 import { Link } from "react-router-dom";
 
-export default function TodoList() {
+export default function TodoList({ usuarioLogado }) {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -63,7 +63,7 @@ export default function TodoList() {
             </p>
           ) : (
             todos?.map((todo) => (
-              <TodoItem key={todo._id || todo.id} todo={todo} />
+              <TodoItem key={todo._id || todo.id} todo={todo} usuarioLogado={usuarioLogado}/>
             ))
           )}
         </div>

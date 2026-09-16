@@ -1,9 +1,9 @@
 import "dotenv/config"; //tem que ser a primeira linha no index.js
 import express from "express";
-// Websocket
-import { Server } from "socket.io";
-// Juntar o express e websocket 
-import { createServer } from "http";
+//websocket
+import {Server} from "socket.io";
+//juntar o express e websocket
+import {createServer} from "http";
 import registerChatSocket from "./Socket/registerChatSocket.js";
 import cors from "cors";
 import routesTarefa from "./Routes/routesTarefa.js";
@@ -27,29 +27,29 @@ app.use(cors({
     origin: FRONTEND_URL
 }));
 app.use(cookieParser());
-
-// Criar um servidor HTTP
+//criar um servidor Http
 const httpServer = createServer(app);
-// Iniciar o websocket 
-const io = new Server(httpServer, {
+//iniciar o websocket
+const io = new Server(httpServer,{
     cors:{
-        origin: FRONTEND_URL, 
-        credentials: true, 
+        origin: FRONTEND_URL,
+        credentials: true,
     }
 }); 
-io.on("connect", (socket)=> {
-    console.log(`Usuário Conectado: ${socket.id}`); 
-    registerChatSocket(io, socket); 
-    socket.on ("disconnect", ()=>{
-        console.log(`Usuário desconectou: ${socket.id}`); 
-    }); 
+io.on("connect", (socket)=>{
+    console.log(`Usuário Conectado: ${socket.id}`);
+    registerChatSocket(io, socket);
+    socket.on("disconnect", ()=>{
+        console.log(`Usuário desconectou: ${socket.id}`);
+
+    });
 });
 
 //obrigatoriamente o swagger deve vir antes das rotas
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/ToDo", routesTarefa);
 app.use("/ToDo", routesUsuario);
-app.use("/ToDo", routesChat); 
+app.use("/ToDo", routesChat);
 httpServer.listen(PORT, ()=>{
-    `Servidor rodando na porta ${PORT}`; 
+    `Servidor rodando na porta ${PORT}`;
 });

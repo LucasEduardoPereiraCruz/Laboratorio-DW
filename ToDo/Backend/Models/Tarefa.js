@@ -17,12 +17,11 @@ const tarefaSchema = new Schema({
         type:String,
         required:true,
     },
-    // Vai ser o ID do usuário 
     criadoPor:{
-        type: Schema.Types.ObjectId, 
+        type: Schema.Types.ObjectId,
         ref: "Usuario",
-        required: true
-    }, 
+        required: true,
+    },
     participam:[{
         type: Schema.Types.ObjectId,
         ref:"Usuario"

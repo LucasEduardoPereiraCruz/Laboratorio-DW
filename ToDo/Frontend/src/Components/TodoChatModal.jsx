@@ -1,70 +1,70 @@
-import React, { useState, useEffect, useRef } from "react";
-import { io } from "socket.io-client";
-import { getChatTodoHistory } from "../api/Todo.jsx";
-
-//Conecta a URL do backend 
+import React, {useState, useEffect, useRef} from "react";
+import {io} from "socket.io-client";
+import {getChatTodoHistory} from "../api/Todo.jsx";
+//conecta a URL do backend 
 const SOCKET_URL = "http://localhost:5000";
-export default function TodoChatModal({ tarefa, usuarioLogado, onClose }) {
-
-  const [mensagens, setMensagens] = useState([]);
+export default function TodoChatModal({tarefa, usuarioLogado, onClose})
+{
+  const[mensagens, setMensagens] = useState([]);
   const [novoTexto, setNovoTexto] = useState("");
   const [loading, setLoading] = useState(true);
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
-  //autoscroll para mostrar a mensagem 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
+  //autoscroll para mostrar as mensagem
+  const scrollToBottom = ()=>{
+    messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+  };
 
-  useEffect(() => {
-    // carregar o histórico das mensagens trocadas anteriormente (backend)
-    async function carregarHistorico() {
+  useEffect(()=>{
+    //carregar o histórico das mensagens trocadas anteriormente (backend)
+    async function carregarHistorico(){
       try {
         setLoading(true);
         const res = await getChatTodoHistory(tarefa._id);
         setMensagens(res.data.mensagens || []);
       } catch (error) {
-        console.log("Erro ao carregar o histórico das mensagens", error)
+        console.log("Erro ao carregar o histórico das mensagens", error);
       }
-      finally {
+      finally{
         setLoading(false);
       }
     }
-
-    carregarHistorico();
-    //Inicializar o socket 
-    socketRef.current = io(SOCKET_URL, {
-      withCredentials: true
-    });
-    //entrar no chat 
-    socketRef.current.emit("join_task", tarefa._id);
-    // ouvir as mensagens em tempo real 
-    socketRef.current.on("receive_message", (mensagem_recebida) => {
-      setMensagens((prev) => [...prev, mensagem_recebida])
-    });
-    //limpar e fechar o modal 
+  
+  carregarHistorico();
+  //inicializar o socket
+  socketRef.current = io(SOCKET_URL, {
+    withCredentials:true,
+  });
+  //entrar no chat
+  socketRef.current.emit("join_task", tarefa._id);
+  //ouvir as mensagens em tempo real
+  socketRef.current.on("receive_message", (mensagemRecebida)=>{
+    setMensagens((prev)=>[... prev, mensagemRecebida]);
+  });
+  //limpar e fechar o modal
     return () => {
-      if (socketRef.current) {
-        socketRef.current.emit("leave_task", tarefa._id);
-        socketRef.current.disconnect();
-      };
+        if (socketRef.current)
+        {
+          socketRef.current.emit("leave_task", tarefa._id);
+          socketRef.current.disconnect();
+        }
     }
   }, [tarefa._id]);
 
-  useEffect(() => {
+  useEffect(()=>{
     scrollToBottom();
   }, [mensagens]);
 
-  const handleEnviar = (e) => {
+  const handleEnviar = (e)=>{
     e.preventDefault();
-    if (!novoTexto.trim()) {
+    if(!novoTexto.trim()){
       return;
     }
-    //emitir mensagem preenchida 
+    //emitir mensagem preenchida
     socketRef.current.emit("send_message", {
       tarefaId: tarefa._id,
       remetenteId: usuarioLogado._id || usuarioLogado.id,
-      texto: novoTexto
+      texto: novoTexto,
     });
     setNovoTexto("");
   };
@@ -72,7 +72,7 @@ export default function TodoChatModal({ tarefa, usuarioLogado, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-xl border border-gray-200 w-full max-w-lg flex flex-col h-[550px] overflow-hidden">
-
+        
         {/* Cabeçalho */}
         <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
           <div>
@@ -106,17 +106,19 @@ export default function TodoChatModal({ tarefa, usuarioLogado, onClose }) {
               return (
                 <div
                   key={msg._id || index}
-                  className={`flex flex-col ${eMeu ? "items-end" : "items-start"
-                    }`}
+                  className={`flex flex-col ${
+                    eMeu ? "items-end" : "items-start"
+                  }`}
                 >
                   <span className="text-[10px] text-gray-400 mb-0.5 px-1">
                     {msg.remetente?.nome || "Usuário"}
                   </span>
                   <div
-                    className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm ${eMeu
+                    className={`max-w-[75%] px-3.5 py-2 rounded-2xl text-sm ${
+                      eMeu
                         ? "bg-blue-600 text-white rounded-tr-none"
                         : "bg-white text-gray-800 border border-gray-200 rounded-tl-none shadow-2xs"
-                      }`}
+                    }`}
                   >
                     {msg.texto}
                   </div>

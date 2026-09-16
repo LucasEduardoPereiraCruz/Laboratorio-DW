@@ -4,21 +4,22 @@ const mensagemSchema = new Schema({
     tarefa:{
         type: Schema.Types.ObjectId,
         ref: "Tarefa",
+        required: true
     },
     remetente:{
-        type: Schema.Types.ObjectId,
+        type:Schema.Types.ObjectId,
         ref: "Usuario",
-        required: true
+        required: true,
     },
     texto:{
         type: String,
-        required: true,
+        required:true,
         trim: true
     },
     lidaPor:[{
-        type: Schema.Types.ObjectId, 
+        type: Schema.Types.ObjectId,
         ref: "Usuario",
-    }],
+    }]
 },{timestamps:true});
 const Mensagem = mongoose.model('Mensagem', mensagemSchema);
 export default Mensagem;
