@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createTodo } from "../api/Todo.jsx";
 import { getUsers } from "../api/Todo.jsx"; // ou seu arquivo de API
+import { useVoiceRecognition } from "../Hook/useVoiceRecognition.js";
 
 export default function TodoForm() {
   const [titulo, setTitulo] = useState("");
@@ -14,6 +15,25 @@ export default function TodoForm() {
 
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
+  const {
+    textoOuvido, 
+    setTextoOuvido, 
+    ouvindo, 
+    iniciarEscuta, 
+    processarComandoVoz,
+    suportado
+  } = useVoiceRecognition();
+  // processar a fala passando lista de usuarios e a função para marcar checkbox 
+  useEffect(()=>{
+    processarComandoVoz(
+    textoOuvido,
+    setTitulo, 
+    setDescricao, 
+    setDataLimite,
+    usuarios, 
+    handleCheckboxChange);
+    setTextoOuvido(""); 
+  }, [textoOuvido, setTextoOuvido, usuarios])
 
   useEffect(() => {
     async function fetchUsuarios() {

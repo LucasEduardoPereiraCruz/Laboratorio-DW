@@ -107,8 +107,51 @@ export function useVoiceRecognition(){
             const regexDescricao = /(?:descrição|descricao)\s+(.+)/i;
             const regexData = /(?:data|data limite|prazo)\s+(.+)/i;
             const regexParticipante = /(?:participante|participantes|adicionar|incluir)\s+(.+)/i;
+            // comando do participante 
+            const matchParticipante = fala.match(regexParticipante);
+            if(matchParticipante && matchParticipante[1] && handleCheckChange){
+                const nomeFalado = matchParticipante[1].trim.toLowerCase(); 
+                // Buscar na lista de usuários um nome equivalente ao que foi falado 
+                const usuarioEncontrado = usuarios.find(u =>u.nome.toLowerCase().includes(nomeFalado))
+                if(usuarioEncontrado){
+                    const id = usuarioEncontrado._id || usuarioEncontrado.id;
+                    handleCheckBoxChange(id); 
+                } else {
+                    console.warn("Usuário não encontrado na lista", nomeFalado);
+                }
+                return;
+            }
+            // Comando de TÍTULO
+            const matchTitulo = fala.match(regexTitulo); 
+            if(matchTitulo && matchTitulo[1]){
+                setTitulo(matchTitulo[1].trim()); 
+                return; 
+            }
+            // Comando de DESCRIÇÃO
+            const matchDescricao = fala.match(regexDescricao); 
+            if(matchDescricao && matchDescricao[1]){
+                setDescricao(matchDescricao[1].trim()); 
+                return; 
+            }
+            // Comando de DATA
+            const matchData = fala.match(regexData); 
+            if(matchData && matchData[1]){
+                const dataFormatada = interpretarDataVoz(matchData[1]);
+                if(dataFormatada){
+                    setDataLimite(dataFormatada); 
+                    
+                }
+                return; 
+            }
+            // Não deu nenhum match 
         };
-         
-
-    
+        return{
+            textoOuvido, 
+            setTextoOuvido, 
+            ouvindo, 
+            iniciarEscuta, 
+            pararEscuta, 
+            processarComandoVoz, 
+            suportado
+        } 
 }
