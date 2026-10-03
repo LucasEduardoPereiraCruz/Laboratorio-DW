@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import TodoChatModal from "./TodoChatModal.jsx";
+import { updateSituacao } from "../api/Todo.jsx";
 
-export default function TodoItem({ todo, usuarioLogado }) {
+export default function TodoItem({ todo, usuarioLogado, onSituacaoAlterada }) {
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [alterandoSituacao, setAlterandoSituacao] = useState(false); 
 
   // Extrai as iniciais do nome (ex: "Carlos Silva" -> "CS")
   const getInitials = (nome) => {
@@ -23,6 +25,28 @@ export default function TodoItem({ todo, usuarioLogado }) {
   // Lista com todos os nomes para tooltip
   const todosNomesParticipantes = participantes.map((p) => p.nome).join(", ");
 
+  // TAREFA DA VÂNIA
+  // Altera a situação da tarefa
+  const handleSituacao = async (situacao) => {
+    
+    try {
+      setAlterandoSituacao(true); 
+
+      // Envia a alteração ao Backend
+      const resposta = await updateSituacao(todo._id, situacao); 
+
+      // Atualiza a tarefa na lista 
+      if(onSituacaoAlterada){
+        onSituacaoAlterada(todo._id, situacao); 
+      }
+
+    } catch (error) {
+      alert("Erro ao alterar a situação: " + (error.response?.data?.message || error.message)); 
+    } finally{
+      setAlterandoSituacao(false); 
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col gap-3 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow bg-white">
@@ -37,15 +61,16 @@ export default function TodoItem({ todo, usuarioLogado }) {
 
           <span
             className={`px-2.5 py-1 text-xs font-semibold rounded-full shrink-0 ${
-              todo.situacao === "CONCLUIDA"
+              todo.situacao === "FINALIZADA"
                 ? "bg-green-100 text-green-700"
-                : todo.situacao === "EM_ANDAMENTO"
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-gray-100 text-gray-700"
+                : todo.situacao === "CANCELADA"
+                ? "bg-red-100 text-red-700"
+                : "bg-gray-100 text-gray-700" 
             }`}
           >
             {todo.situacao}
           </span>
+
         </div>
 
         {/* Rodapé do Card: Infos + Equipe + Botão de Chat */}
@@ -102,6 +127,37 @@ export default function TodoItem({ todo, usuarioLogado }) {
                   )}
                 </div>
               </div>
+            )}
+
+            {/* TAREFA VÂNIA */}
+            {/* FINALIZAR */}
+            {todo.situacao === "PENDENTE" && (
+              <button
+                  onClick={()=>
+                    handleSituacao(
+                      "FINALIZADA"
+                    )
+                  }
+                  disabled={alterandoSituacao}
+                  className="px-3 py-1.5 text-xs font-semibold text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+              >
+                ✓ Finalizar 
+              </button>
+            )}
+
+            {/* CANCELAR */}
+            {todo.situacao === "PENDENTE" && (
+              <button
+                  onClick={()=>
+                    handleSituacao(
+                      "CANCELADA"
+                    )
+                  }
+                  disabled={alterandoSituacao}
+                  className="px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+              >
+                ✕ Cancelar
+              </button>
             )}
 
             {/*Botão para abrir o modal de Chat */}

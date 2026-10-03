@@ -13,8 +13,12 @@ const tarefaSchema = new Schema({
         type:Date,
         required:true,
     },
+    //TAREFA DA VÂNIA   
+    // Situação da tarefa, toda tarefa começa como pendente e depois será permitido finalizar ou cancelar ela. \\
     situacao:{
         type:String,
+        enum: ["PENDENTE", "CANCELADA", "FINALIZADA"],
+        default: "PENDENTE",
         required:true,
     },
     criadoPor:{

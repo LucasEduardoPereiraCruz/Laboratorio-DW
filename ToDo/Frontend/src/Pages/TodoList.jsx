@@ -8,6 +8,7 @@ export default function TodoList({ usuarioLogado }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Busca todas as tarefas do backend
   const fetchTodos = async () => {
     try {
       setLoading(true);
@@ -21,9 +22,19 @@ export default function TodoList({ usuarioLogado }) {
     }
   };
 
+  // Executa quando a página é carregada
   useEffect(() => {
     fetchTodos();
   }, []);
+
+
+  // TAREFA VÂNIA 
+  // Atualiza uma tarefa depois que a situação foi alterada 
+  const handleSituacaoAlterada = (id, novaSituacao) => {
+    setTodos((tarefasAtuais) => tarefasAtuais.map((tarefa) =>
+      tarefa._id === id ? { ...tarefa, situacao: novaSituacao } : tarefa));
+  };
+
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6 md:p-8">
@@ -33,12 +44,24 @@ export default function TodoList({ usuarioLogado }) {
           <h2 className="text-2xl font-bold text-gray-800">Minhas Tarefas</h2>
           <p className="text-sm text-gray-500">Gerencie suas atividades diárias</p>
         </div>
-        <Link
-          to="/new"
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
-        >
-          <span>+</span> Nova Tarefa
-        </Link>
+
+        {/* Grupo de botões */}
+        <div className="flex items-center gap-2">
+          <Link
+            to="/new"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 flex items-center gap-2"
+          >
+            <span>+</span> Nova Tarefa
+          </Link>
+
+          <Link
+            to="/graficos"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+             <span>📊 </span>Gráficos
+          </Link>
+        </div>
+
       </div>
 
       {/* Status de Carregamento e Erro */}
@@ -63,7 +86,7 @@ export default function TodoList({ usuarioLogado }) {
             </p>
           ) : (
             todos?.map((todo) => (
-              <TodoItem key={todo._id || todo.id} todo={todo} usuarioLogado={usuarioLogado}/>
+              <TodoItem key={todo._id || todo.id} todo={todo} usuarioLogado={usuarioLogado} onSituacaoAlterada={handleSituacaoAlterada} />
             ))
           )}
         </div>

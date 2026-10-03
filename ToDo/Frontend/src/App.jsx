@@ -9,6 +9,7 @@ import { logout, getProfile } from "./api/Todo.jsx";
 import Cadastro from "./Pages/Cadastro.jsx";
 import EsqueceuSenha from "./Pages/EsqueceuSenha.jsx"
 import ResetarSenha from "./Pages/ResetarSenha.jsx";
+import Graficos from "./Pages/Graficos.jsx";
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -160,6 +161,20 @@ export default function App() {
                     )
                   }
                 />
+
+                {/* TAREFA DA VÂNIA*/}
+                {/* ROTA DO GRÁFICO*/}
+                <Route
+                path="/graficos"
+                element={
+                  isAuthenticated? (
+                    <Graficos />
+                  ) : (
+                    <Navigate to="/login" replace />
+                  )
+                }
+                />
+
               </Routes>
             </main>
           </div>
