@@ -1,0 +1,14 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext", // nodenext serve para pegar as versões mais atualizada, o ModuleResolution ele renderiza os elementos
+    "target": "esnext",
+    "types": ["node"],
+    "lib": ["esnext"],
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+  }
+}
