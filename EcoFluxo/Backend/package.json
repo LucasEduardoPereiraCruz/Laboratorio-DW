@@ -13,6 +13,9 @@
   "dependencies": {
     "@node-rs/argon2": "^2.2.2",
     "@prisma/client": "^7.10.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^18.0.6",
@@ -21,7 +24,6 @@
     "nodemailer": "^10.0.16"
   },
   "devDependencies": {
-    "@types/express": "github:types/express",
     "@types/node": "^26.6.4",
     "nodemon": "^3.1.14",
     "prisma": "^7.10.0",
