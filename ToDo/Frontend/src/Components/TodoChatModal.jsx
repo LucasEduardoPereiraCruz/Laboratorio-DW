@@ -1,15 +1,16 @@
+// CHAT EM TEMPO REAL 
 import React, {useState, useEffect, useRef} from "react";
-import {io} from "socket.io-client";
+import {io} from "socket.io-client"; // Importa o cliente do Socket.io e define o endereço base do servidor de WebSocket.
 import {getChatTodoHistory} from "../api/Todo.jsx";
 //conecta a URL do backend 
-const SOCKET_URL = "http://localhost:5000";
+const SOCKET_URL = "http://localhost:5000"; // Importa o cliente do Socket.io e define o endereço base do servidor de WebSocket.
 export default function TodoChatModal({tarefa, usuarioLogado, onClose})
 {
-  const[mensagens, setMensagens] = useState([]);
-  const [novoTexto, setNovoTexto] = useState("");
-  const [loading, setLoading] = useState(true);
-  const socketRef = useRef(null);
-  const messagesEndRef = useRef(null);
+  const[mensagens, setMensagens] = useState([]); // Guarda a lista de todas as mensagens do chat.
+  const [novoTexto, setNovoTexto] = useState(""); // Guarda o texto que o usuário está digitando no input.
+  const [loading, setLoading] = useState(true); // Controla se o histórico ainda está carregando.
+  const socketRef = useRef(null); // Mantém a referência da conexão do socket ativa durante todo o ciclo de vida do componente sem re-renderizar a tela atoa.
+  const messagesEndRef = useRef(null); // Usada para fazer o truque do auto-scroll (jogar a tela para o final automaticamente quando chega mensagem nova).
   //autoscroll para mostrar as mensagem
   const scrollToBottom = ()=>{
     messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
@@ -29,8 +30,8 @@ export default function TodoChatModal({tarefa, usuarioLogado, onClose})
         setLoading(false);
       }
     }
-  
   carregarHistorico();
+
   //inicializar o socket
   socketRef.current = io(SOCKET_URL, {
     withCredentials:true,
@@ -51,10 +52,14 @@ export default function TodoChatModal({tarefa, usuarioLogado, onClose})
     }
   }, [tarefa._id]);
 
+  // Sempre que o array de mensagens muda, ele chama a função scrollToBottom() para rolar a tela para baixo.
   useEffect(()=>{
     scrollToBottom();
   }, [mensagens]);
 
+  // Cancela o comportamento padrão do formulário (e.preventDefault()), valida se o texto não está vazio, 
+  // e dá um socketRef.current.emit("send_message", ...) 
+  // enviando o ID da tarefa, quem mandou e o texto. Depois, limpa o input.
   const handleEnviar = (e)=>{
     e.preventDefault();
     if(!novoTexto.trim()){

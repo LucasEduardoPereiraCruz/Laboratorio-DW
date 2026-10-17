@@ -1,3 +1,4 @@
+// ESTADOS E VERIFICAÇÕES DE SESSÃO   
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Link, useNavigate, Navigate } from "react-router-dom";
 import LandingPage from "./Pages/LandingPage";
@@ -29,26 +30,29 @@ export default function App() {
       setIsAuthenticated(false);
       setUsuarioLogado(null);
     } finally {
-      setLoading(false);
+      setLoading(false); // Terminou de carregar, libera a tela
     }
   };
 
   useEffect(() => {
-    checkUserSession();
+    checkUserSession(); // Roda assim que o app abre para ver se tem cookie válido
   }, []);
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await logout(); // Pede para o backend destruir/limpar o cookie
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
     } finally {
       setIsAuthenticated(false);
       setUsuarioLogado(null);
-      navigate("/");
+      navigate("/"); // Manda o usuário de volta para a Home/Landing Page
     }
   };
 
+  // Enquanto o React está perguntando ao backend se o usuário está logado (aquela fração de segundo da requisição), 
+  // ele segura a renderização exibindo um aviso de "Carregando...". 
+  // Isso evita que a tela pisque o painel de login antes de saber se o usuário já estava autenticado.
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">

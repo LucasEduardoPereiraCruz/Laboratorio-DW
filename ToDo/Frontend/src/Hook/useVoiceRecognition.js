@@ -3,19 +3,26 @@ import {useState, useEffect, useRef} from "react";
 function interpretarDataVoz(texto){
     const fala = texto.toLowerCase().trim(); 
     const hoje = new Date()
+    // Se falar "hoje", pega a data de hoje
     if(fala.includes("hoje")){
         return hoje.toISOString().split("T")[0] //Pega só indice 0, que é somente a data
     }
+
+    // Se falar "amanhã", soma 1 dia à data atual
     if(fala.includes("amanhã") || fala.includes("amanha")){
         const amanha = new Date(); 
         amanha.setDate(hoje.getDate()+1); 
         return amanha.toISOString().split("T")[0]; 
     }
+
+    // Se falar "depois de amanhã", soma 2 dias
     if(fala.includes("depois de amanhã") || fala.includes("depois de amanhã")){
         const depoisAmanha = new Date(); 
         depoisAmanha.setDate(hoje.getDate()+2); 
         return depoisAmanha.toISOString().split("T")[0]; 
     }
+
+    // Usa Regex para capturar frases como "daqui a 5 dias"
     const matchDias = fala.match(/daqui a (\d+) dias/); 
     if(matchDias){
         const dias = parseInt(matchDias[1], 10); 
@@ -28,9 +35,9 @@ function interpretarDataVoz(texto){
 
 export function useVoiceRecognition(){
     const [textoOuvido, setTextoOuvido] = useState(""); 
-    const [ouvindo, setOuvindo] = useState("false"); 
-    const [suportado, setSuportado] = useState("true");
-    const recognitionRef = useRef(null) 
+    const [ouvindo, setOuvindo] = useState("false"); // Indica se o microfone está ativo
+    const [suportado, setSuportado] = useState("true");  // Indica se o navegador suporta reconhecimento de voz
+    const recognitionRef = useRef(null) // Guarda a instância do reconhecedor de voz sem causar re-renderizações
     useEffect(()=>{
         // Verifica se a API está disponível no navegador 
         if(typeof window !== "undefined"){
@@ -39,9 +46,9 @@ export function useVoiceRecognition(){
         if(SpeechRecognition){
             const recognition = new SpeechRecognition(); 
             //microfone ficar contínuo 
-            recognition.continuous = true; 
-            recognition.interimResults = true; 
-            recognition.lang = "pt-BR"
+            recognition.continuous = true; // Mantém a escuta contínua
+            recognition.interimResults = true; // Retorna resultados parciais enquanto a pessoa fala
+            recognition.lang = "pt-BR" // Define o idioma 
             // Converte em texto após o áudio 
             recognition.onresult = (event) => {
                 let transcricaoFinal = ""; 
@@ -62,13 +69,13 @@ export function useVoiceRecognition(){
             };
             // fim da fala
             recognition.onend = () =>{
-                setOuvindo(false); 
+                setOuvindo(false); // Reseta o estado quando a fala encerra
             };
-            recognition.current = recognition; 
+            recognition.current = recognition; // Salva na ref
         }
         else
         {
-            setSuportado(false); 
+            setSuportado(false); // Se o navegador não tiver a API
         }
     }, []); 
     // Inicia ou interrompe a gravação (liga/desliga)
@@ -76,7 +83,7 @@ export function useVoiceRecognition(){
         if(!recognitionRef.current) return; 
         if(ouvindo){
             // se já estiver ouvindo o click manual encerra a gravação 
-            recognitionRef.current.stop(); 
+            recognitionRef.current.stop(); // Se já estiver ouvindo, para
             setOuvindo(false); 
         }
         else 
@@ -84,7 +91,7 @@ export function useVoiceRecognition(){
             // limpa textos e inicia a escuta 
             setTextoOuvido(""); 
             setOuvindo(true)
-            recognitionRef.current.start(); 
+            recognitionRef.current.start(); // Inicia a gravação
         }
     }; 
     // Função para parar gravação manualmente 
@@ -115,7 +122,7 @@ export function useVoiceRecognition(){
                 const usuarioEncontrado = usuarios.find(u =>u.nome.toLowerCase().includes(nomeFalado))
                 if(usuarioEncontrado){
                     const id = usuarioEncontrado._id || usuarioEncontrado.id;
-                    handleCheckBoxChange(id); 
+                    handleCheckBoxChange(id); // Marca o usuário na lista
                 } else {
                     console.warn("Usuário não encontrado na lista", nomeFalado);
                 }
@@ -145,6 +152,9 @@ export function useVoiceRecognition(){
             }
             // Não deu nenhum match 
         };
+
+        //Expõe todas essas variáveis e funções para que qualquer página ou componente do React possa chamar o microfone e 
+        // interpretar os comandos de voz facilmente.
         return{
             textoOuvido, 
             setTextoOuvido, 

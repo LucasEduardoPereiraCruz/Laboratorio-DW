@@ -1,10 +1,11 @@
+// O CARTÃO DA TAREFA   
 import React, { useState } from "react";
 import TodoChatModal from "./TodoChatModal.jsx";
 import { updateSituacao } from "../api/Todo.jsx";
 
 export default function TodoItem({ todo, usuarioLogado, onSituacaoAlterada }) {
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [alterandoSituacao, setAlterandoSituacao] = useState(false); 
+  const [isChatOpen, setIsChatOpen] = useState(false); // Controla se o modal do chat está aberto ou fechado (true/false).
+  const [alterandoSituacao, setAlterandoSituacao] = useState(false); // Indica se está acontecendo uma requisição para o backend alterar o status no momento (evita cliques duplos).
 
   // Extrai as iniciais do nome (ex: "Carlos Silva" -> "CS")
   const getInitials = (nome) => {
@@ -19,18 +20,21 @@ export default function TodoItem({ todo, usuarioLogado, onSituacaoAlterada }) {
 
   // Limite de participantes visíveis na pilha
   const maxVisible = 3;
-  const visibleParticipantes = participantes.slice(0, maxVisible);
-  const extraCount = participantes.length - maxVisible;
+  const visibleParticipantes = participantes.slice(0, maxVisible); // fatia (slice) para mostrar no máximo 3 visíveis na tela (maxVisible)
+  const extraCount = participantes.length - maxVisible; // calcula quantos sobraram (extraCount) e junta todos os nomes em uma string única para usar em um tooltip.
 
+  
   // Lista com todos os nomes para tooltip
-  const todosNomesParticipantes = participantes.map((p) => p.nome).join(", ");
+  // percorre cada item de um array, aplica uma transformação em cada um deles, 
+  // e devolve um array novo (do tamanho original) mas com os resultados transformados
+  const todosNomesParticipantes = participantes.map((p) => p.nome).join(", "); 
 
   // TAREFA DA VÂNIA
   // Altera a situação da tarefa
   const handleSituacao = async (situacao) => {
     
     try {
-      setAlterandoSituacao(true); 
+      setAlterandoSituacao(true); // Ativa o estado de carregamento
 
       // Envia a alteração ao Backend
       const resposta = await updateSituacao(todo._id, situacao); 
@@ -40,10 +44,11 @@ export default function TodoItem({ todo, usuarioLogado, onSituacaoAlterada }) {
         onSituacaoAlterada(todo._id, situacao); 
       }
 
+      // Se der erro, exibe um alerta
     } catch (error) {
       alert("Erro ao alterar a situação: " + (error.response?.data?.message || error.message)); 
     } finally{
-      setAlterandoSituacao(false); 
+      setAlterandoSituacao(false); // desliga o estado de carregamento.
     }
   };
 
