@@ -1,5 +1,7 @@
+// ENCAPSULA O SERVIÇO DE INTEGRAÇÃO COM OS SERVIDORES SMTP PARA ENVIO DE E-MAILS
 import nodemailer from 'nodemailer';
 
+// Lê as variáveis de ambiente 
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASS = process.env.EMAIL_PASS;
 const EMAIL_HOST = process.env.EMAIL_HOST || 'smtp.gmail.com';
@@ -21,11 +23,10 @@ const transporter = nodemailer.createTransport({
  //Envia e-mail com link de redefinição de senha
  // parâmetro toEmail (string) - E-mail do usuário destinatário
  // parâmetro token (string) - Token gerado para redefinição
- 
 export const sendPasswordResetEmail = async (toEmail, token) => {
-  const resetLink = `${FRONTEND_URL}/reset-password?token=${token}`;
+  const resetLink = `${FRONTEND_URL}/reset-password?token=${token}`; // Monta a URL de redefinição incluindo o token via query param
 
-  await transporter.sendMail({
+  await transporter.sendMail({ // Envia a mensagem no formato HTML estilizado com o botão "Redefinir Senha".
     from: `"App ToDo" <${EMAIL_USER}>`,
     to: toEmail,
     subject: "Redefinição de Senha Solicitada",

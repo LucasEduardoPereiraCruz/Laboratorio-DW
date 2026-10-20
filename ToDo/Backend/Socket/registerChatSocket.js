@@ -1,3 +1,5 @@
+// ESTE ARQUIVO REGISTRA E GERENCIA OUVINTES DE EVENTOS EM TEMPO REAL (Socket.io) ASSOCIADOS AO CHAT DE TAREFAS
+
 import ChatController from "../Controllers/ChatController.js";
 export default function registerChatSocket(io, socket){
     //entrar em um chat específico (de uma tarefa)
