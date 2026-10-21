@@ -1,3 +1,4 @@
+// GERENCIA A CRIAÇÃO, LISTAGEM E ALTERAÇÃO DE STATUS DAS TAREFAS
 import {Router} from "express";
 import TarefaController from "../Controllers/TarefaController.js";
 import UserMiddleware from "../Middleware/UserMiddleware.js";
@@ -9,6 +10,7 @@ routesTarefa.post("/create", UserMiddleware, TarefaController.Create);
 routesTarefa.get("/getAll", UserMiddleware, TarefaController.getAll);
 
 // TAREFA VÂNIA
+// rota put (atualização)
 // Altera a situação da tarefa
 routesTarefa.put("/updateSituacao/:id", UserMiddleware, TarefaController.UpdateSituacao); 
 

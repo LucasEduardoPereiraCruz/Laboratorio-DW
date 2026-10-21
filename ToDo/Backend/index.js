@@ -10,7 +10,7 @@ import routesTarefa from "./Routes/routesTarefa.js";
 import routesUsuario from "./Routes/routesUsuario.js";
 import routesChat from "./Routes/routesChat.js";
 import swaggerUi from "swagger-ui-express";
-import { createRequire } from "module";
+import { createRequire } from "module"; // Ferramenta do Node.js usada aqui para permitir importar arquivos .json
 import cookieParser from "cookie-parser";
 
 const PORT = process.env.PORT || 5000; // Definição da porta 
@@ -23,10 +23,12 @@ const app = new express();
 app.use(express.json());
 
 app.use(cors({
-    credentials: true, 
-    origin: FRONTEND_URL
+    credentials: true, // Permite o envio de cookies entre domínios/portas diferentes
+    origin: FRONTEND_URL // Libera apenas o endereço do frontend React
 }));
-app.use(cookieParser());
+app.use(cookieParser()); // Habilita o Express a ler cookies HTTP (como o token JWT)
+
+
 //criar um servidor Http
 const httpServer = createServer(app);
 //iniciar o websocket
@@ -38,7 +40,7 @@ const io = new Server(httpServer,{
 }); 
 io.on("connect", (socket)=>{
     console.log(`Usuário Conectado: ${socket.id}`);
-    registerChatSocket(io, socket);
+    registerChatSocket(io, socket); // Delega os eventos do chat para o arquivo de rotas/eventos do socket
     socket.on("disconnect", ()=>{
         console.log(`Usuário desconectou: ${socket.id}`);
 
@@ -47,9 +49,12 @@ io.on("connect", (socket)=>{
 
 //obrigatoriamente o swagger deve vir antes das rotas
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Todas as rotas de tarefas, usuários e chat começam com o prefixo /ToDo
 app.use("/ToDo", routesTarefa);
 app.use("/ToDo", routesUsuario);
 app.use("/ToDo", routesChat);
-httpServer.listen(PORT, ()=>{
+
+// Inicialização do Servidor 
+httpServer.listen(PORT, ()=>{ // Põe o servidor para escutar requisições na porta definida (5000), oficializando que a aplicação está no ar.
     `Servidor rodando na porta ${PORT}`;
 });

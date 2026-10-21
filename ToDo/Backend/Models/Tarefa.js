@@ -1,3 +1,4 @@
+// DEFINE OS DADOS DE UMA TAREFA NO SISTEMA
 import mongoose from "../db/conn.js";
 const {Schema} = mongoose;
 const tarefaSchema = new Schema({
@@ -21,15 +22,15 @@ const tarefaSchema = new Schema({
         default: "PENDENTE",
         required:true,
     },
-    criadoPor:{
+    criadoPor:{ // ID do usuário dono/criador da tarefa (vinculado ao Usuario).
         type: Schema.Types.ObjectId,
         ref: "Usuario",
         required: true,
     },
-    participam:[{
+    participam:[{ // Um array de IDs de outros usuários convidados a participar/colaborar na tarefa.
         type: Schema.Types.ObjectId,
         ref:"Usuario"
     }]
-},{timestamps:true});
+},{timestamps:true}); // Gera automaticamente as datas de criação e atualização da tarefa.
 const Tarefa = mongoose.model('Tarefa', tarefaSchema);
 export default Tarefa;
