@@ -26,7 +26,7 @@ export default class EcopontoController {
                     bairro: bairro ?? null,
                     cidade: cidade ?? null,
                     uf: uf ?? null,
-                    nota: nota ? Number(nota) : null
+                    nota: nota !== undefined && nota !== null ? Number(nota) : null
                 }
             });
 

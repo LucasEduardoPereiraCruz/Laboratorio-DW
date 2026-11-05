@@ -9,10 +9,15 @@ export default class LixeiraController {
             const { uuid_sensor, tipo, volume_max, nivel_cheio, ecoponto_id } = req.body;
 
             // Verificação dos dados obrigatórios
-            if (!uuid_sensor || !tipo || !volume_max === undefined || !nivel_cheio === undefined || !ecoponto_id) {
+            if (!uuid_sensor || !tipo || volume_max === undefined || nivel_cheio === undefined || !ecoponto_id) {
                 return res.status(400).json({
                     error: "Os campos 'uuid_sensor', 'tipo', 'volume_max', 'nivel_cheio' e 'ecoponto_id' são obrigatórios."
                 });
+            }
+
+            const tiposValidos = ["PLASTICO", "VIDRO", "PAPEL", "METAL", "ORGANICO"];
+            if (!tiposValidos.includes(tipo)) {
+                return res.status(400).json({ error: "Tipo inválido." });
             }
 
             // Verifica se o ecoponto informado realmente existe
@@ -29,8 +34,8 @@ export default class LixeiraController {
             // Inserir no banco de dados
             const novaLixeira = await prisma.lixeira.create({
                 data: {
-                    uuid_sensor, 
-                    tipo, 
+                    uuid_sensor,
+                    tipo,
                     volume_max: Number(volume_max),
                     nivel_cheio: Number(nivel_cheio),
                     ecoponto_id: Number(ecoponto_id)
@@ -38,40 +43,38 @@ export default class LixeiraController {
             });
 
             return res.status(201).json({
-                message: "Lixeira criada com sucesso!", 
+                message: "Lixeira criada com sucesso!",
                 lixeira: novaLixeira
-            }); 
+            });
         }
 
         catch (error) {
-            console.error("Erro ao criar lixeira", error); 
+            console.error("Erro ao criar lixeira", error);
             return res.status(500).json({
                 error: "Erro interno ao tentar cadastrar a lixeira"
-            }); 
+            });
         }
     }
 
 
-    static async getLixeiras(req: Request, res: Response){
-        try 
-        {
+    static async getLixeiras(req: Request, res: Response) {
+        try {
             const lixeiras = await prisma.lixeira.findMany({
                 orderBy: {
                     criadoEm: 'desc'
-                }, 
+                },
                 include: {
                     ecoponto: true
                 }
-            }); 
+            });
 
-            return res.status(200).json(lixeiras); 
+            return res.status(200).json(lixeiras);
         }
-        catch (error) 
-        {
-            console.error("Erro ao buscar lixeiras", error); 
+        catch (error) {
+            console.error("Erro ao buscar lixeiras", error);
             return res.status(500).json({
                 error: "Erro interno ao tentar buscar as lixeiras"
-            }); 
+            });
         }
     }
 }
