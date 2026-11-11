@@ -1,16 +1,20 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "description": "Controle de Ecopontos",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "swagger": "node --import tsx swagger.js",
-    "start": "npm run swagger && tsx watch index.ts"
+    "swagger": "node --import tsx swagger.ts",
+    "start": "nodemon --exec tsx index.ts",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "type": "module",
   "dependencies": {
     "@node-rs/argon2": "^2.2.2",
@@ -25,7 +29,8 @@
     "nodemailer": "^10.0.16"
   },
   "devDependencies": {
-    "@types/express": "^5.0.6",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.6.4",
     "@types/swagger-ui-express": "^4.1.8",
     "nodemon": "^3.1.14",
