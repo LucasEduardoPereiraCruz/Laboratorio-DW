@@ -133,7 +133,6 @@ export default class UsuarioController{
                     id: usuario.id,
                     nome: usuario.nome,
                     email: usuario.email,
-                    status: usuario.status,
                     role: usuario.perfil,
                 },
                 token: token
