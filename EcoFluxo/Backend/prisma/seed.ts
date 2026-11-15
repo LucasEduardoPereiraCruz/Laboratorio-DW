@@ -5,8 +5,8 @@ import prisma from "../lib/prisma.js";
 async function main() {
   console.log("Iniciando o seed...");
 
-  const emailGestor = "gestor@ecofluxo.com";//substituir por um e-mail que você tenha acesso
-  const senhaPura = "Gestor@123";//se achar necessário, troque por uma senha que queira.
+  const emailGestor = "lucascruzjau@gmail.com";//substituir por um e-mail que você tenha acesso
+  const senhaPura = "";//se achar necessário, troque por uma senha que queira.
 
   const usuarioExistente = await prisma.usuario.findUnique({
     where: { email: emailGestor },

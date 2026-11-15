@@ -1,122 +1,97 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
-function App() {
-  const [count, setCount] = useState(0)
+import Navbar from './Components/Navbar';
+import Footer from './Components/Footer';
+
+import Home from './Pages/Home';
+import Login from './Pages/Login';
+import Verify2FA from './Pages/Verify2FA';
+
+// IMPORTANDO AS NOVAS PÁGINAS QUE CRIAMOS
+import Ecopontos from './Pages/Ecopontos';
+import CadastrarEcoponto from './Pages/CadastrarEcoponto';
+import Lixeiras from './Pages/Lixeiras';
+import CadastrarLixeira from './Pages/CadastrarLixeiras';
+
+import api from "./utils/api";
+
+function AppContent() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkUserSession = async () => {
+      try {
+        const response = await api.get("/me");
+        if (response.status === 200) {
+          setUser(response.data.usuario || response.data);
+        }
+      } catch (error: any) {
+        if (error.response?.status !== 402 && error.response?.status !== 401) {
+          console.log("Sessão não encontrada:", error);
+        }
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkUserSession();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/logout");
+    }
+    catch (error) {
+      console.error("Erro ao deslogar:", error);
+    }
+    finally {
+      localStorage.clear();
+      sessionStorage.clear();
+      setUser(null);
+      navigate("/")
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 text-emerald-600 text-lg font-semibold">
+        Carregando EcoFluxo...
+      </div>
+    );
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="min-h-screen w-full flex flex-col bg-gray-50 font-sans">
+      <Navbar user={user} onLogout={handleLogout} />
 
-      <div className="ticks"></div>
+      <main className="grow w-full pt-32 pb-20 flex flex-col justify-center">
+        <Routes>
+          <Route path="/" element={<Home user={user} />} />
+          <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
+          <Route path="/verify-2fa" element={user ? <Navigate to="/dashboard" /> : <Verify2FA onLoginSuccess={(u: any) => setUser(u)} />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          {/* ADICIONANDO AS ROTAS DE ECOPONTOS E LIXEIRAS */}
+          <Route path="/ecopontos" element={<Ecopontos />} />
+          <Route path="/ecopontos/cadastrar" element={<CadastrarEcoponto />} />
+          <Route path="/lixeiras" element={<Lixeiras />} />
+          <Route path="/lixeiras/cadastrar" element={<CadastrarLixeira />} />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </main>
+
+      <Footer />
+    </div>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}

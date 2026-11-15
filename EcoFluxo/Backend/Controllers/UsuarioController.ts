@@ -1,80 +1,79 @@
 import prisma from "../lib/prisma.js";
-import {hash, verify} from "@node-rs/argon2";
-import type {Request, Response} from "express";
-import {send2FACodeEmail} from "../Services/emailServices.js";
+import { hash, verify } from "@node-rs/argon2";
+import type { Request, Response } from "express";
+import { send2FACodeEmail } from "../Services/emailServices.js";
 import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || "sua_chave_secreta_super_segura";
-export default class UsuarioController{
-    static async Create(req:Request,res:Response){
-        try
-         {
-            const {} = req.body;
+export default class UsuarioController {
+    static async Create(req: Request, res: Response) {
+        try {
+            const { } = req.body;
             //verificação dos dados obrigatórios
 
             //inserir no banco de dados
         } catch (error) {
-            
+
         }
-        
+
     };
-    static async Login(req:Request,res:Response)
-    {
-        
-            const {email,senha} = req.body;
-            //verificação dos dados obrigatórios
-            if(!email || !senha)
-            {
-                return res.status(404).json({message:"E-mail e senha são obrigatórios"});
+    static async Login(req: Request, res: Response) {
+
+        const { email, senha } = req.body;
+        //verificação dos dados obrigatórios
+        if (!email || !senha) {
+            return res.status(404).json({ message: "E-mail e senha são obrigatórios" });
+        }
+        try {
+            const usuario = await prisma.usuario.findUnique({
+                where: { email }
+            });
+            if (!usuario) {
+                return res.status(404).json({ message: "Verifique as credenciais" });
             }
-            try
-            {
-                const usuario = await prisma.usuario.findUnique({
-                                        where:{email}
-                                });
-                if(!usuario)
-                {
-                    return res.status(404).json({message:"Verifique as credenciais"});
+            const senhaCorreta = await verify(usuario.senha, senha);
+            if (!senhaCorreta) {
+                return res.status(404).json({ message: "Verifique as credenciais" });
+            }
+            //gerar o código 2FA
+            const codigoFA = Math.floor(100000 + Math.random() * 900000).toString();
+            const expiracao = new Date(Date.now() + 10 * 60 * 1000);
+            //atualizar o código e tempo no banco de dados
+            await prisma.usuario.update({
+                where: { id: usuario.id },
+                data: {
+                    loginCode: codigoFA,
+                    loginCodeExpires: expiracao
                 }
-                const senhaCorreta = await verify(usuario.senha, senha);
-                if(!senhaCorreta)
-                {
-                    return res.status(404).json({message:"Verifique as credenciais"});
-                }
-                //gerar o código 2FA
-                const codigoFA = Math.floor(100000 + Math.random() * 900000).toString();
-                const expiracao = new Date(Date.now() + 10 * 60 * 1000);
-                //atualizar o código e tempo no banco de dados
-                await prisma.usuario.update({
-                    where:{id:usuario.id},
-                    data:{
-                        loginCode: codigoFA,
-                        loginCodeExpires: expiracao
-                    }
-                });
-                //enviar email contendo o código
-                await send2FACodeEmail(usuario.email, codigoFA);
-                return res.status(200).json({
-                    require2FA: true,
-                    message:"Código de verificação enviado para o seu e-mail",
-                    email: usuario.email
-                });
-            }
-            catch(error)
-            {
-                return res.status(500).json({message:"Problema interno - login"});
-            }
+            });
+            // JOGA O CÓDIGO DIRETO NO TERMINAL DO BACKEND 
+            console.log("==================================================");
+            console.log(`CÓDIGO 2FA PARA O USUÁRIO ${usuario.email}: ${codigoFA}`);
+            console.log("==================================================");
+
+            // (Comentado para não tentar enviar o e-mail na porta 587 e quebrar)
+            // await send2FACodeEmail(usuario.email, codigoFA);
+            return res.status(200).json({
+                require2FA: true,
+                message: "Código de verificação enviado para o seu e-mail",
+                email: usuario.email
+            });
+        }
+        catch (error) {
+            console.log(error);
+            return res.status(500).json({ message: "Problema interno - login" });
+        }
     };
-    static async Logout(req:Request,res:Response){
-          
+    static async Logout(req: Request, res: Response) {
+
         res.clearCookie("token", {
             httpOnly: true,
             secure: true,
             sameSite: 'none'
         });
         return res.status(200).json({ message: "Logout com sucesso" });
-        
+
     };
-    static async Verify2FA(req:Request,res:Response){
+    static async Verify2FA(req: Request, res: Response) {
         const { email, codigo } = req.body;
 
         if (!email || !codigo) {
@@ -115,9 +114,9 @@ export default class UsuarioController{
                 email: usuario.email,
                 role: usuario.perfil
             };
-            
+
             const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: "1h" });
-            
+
             // Salva nos cookies igual você já tinha estruturado perfeitamente
             res.cookie("token", token, {
                 httpOnly: true,
@@ -142,30 +141,28 @@ export default class UsuarioController{
             console.log("Erro na verificação do 2FA", error);
             return res.status(500).json({ message: "Erro interno. Tente mais tarde." });
         }
-            
+
     };
-    static async Reset(req:Request,res:Response){
-        try
-         {
-            const {} = req.body;
+    static async Reset(req: Request, res: Response) {
+        try {
+            const { } = req.body;
             //verificação dos dados obrigatórios
 
             //inserir no banco de dados
         } catch (error) {
-            
+
         }
-        
+
     };
-    static async forgotPassword(req:Request,res:Response){
-        try
-         {
-            const {} = req.body;
+    static async forgotPassword(req: Request, res: Response) {
+        try {
+            const { } = req.body;
             //verificação dos dados obrigatórios
 
             //inserir no banco de dados
         } catch (error) {
-            
+
         }
-        
+
     };
 }

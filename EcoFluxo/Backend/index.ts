@@ -6,9 +6,11 @@ import fs from "fs";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
 
-// Importar as suas rotas
+// Importar as rotas
+import routerUsuario from "./Routes/UsuarioRoutes.js";
 import routerEcoponto from "./Routes/EcopontoRoutes.js";
 import routerLixeira from "./Routes/LixeirasRoutes.js";
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,8 +26,9 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Registrar as suas rotas
-app.use("/ecoponto", routerEcoponto);
-app.use("/lixeira", routerLixeira);
+app.use("/api", routerUsuario);
+app.use("/api/ecoponto", routerEcoponto);
+app.use("/api/lixeira", routerLixeira);
 
 // Configuração segura do Swagger (padrão da prof: não quebra se o JSON não existir)
 try {
