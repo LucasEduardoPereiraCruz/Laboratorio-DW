@@ -17,7 +17,7 @@ const Verify2FA: React.FC<Verify2FAProps> = ({ onLoginSuccess }) => {
   // Pega o e-mail passado via state pelo Login
   const stateEmail = location.state?.email || '';
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
@@ -35,17 +35,16 @@ const Verify2FA: React.FC<Verify2FAProps> = ({ onLoginSuccess }) => {
         codigo: codigo
       });
 
+      // Salva o token no localStorage
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
 
+      // Salva os dados do usuário no localStorage
+      if (response.data.usuario) {
+        localStorage.setItem("usuario", JSON.stringify(response.data.usuario));
+      }
 
-      // SALVA O TOKEN NO LOCALSTORAGE 
-      localStorage.setItem("token", response.data.token);
-
-      // Também salva os dados do usuário 
-      localStorage.setItem("usuario", JSON.stringify(response.data.usuario));
-
-
-
-      // Supondo que o backend retorne o usuário logado e o token após validar o 2FA
       const usuarioLogado = response.data.usuario;
 
       // Notifica o App.tsx que o login/2FA foi concluído com sucesso
@@ -53,7 +52,6 @@ const Verify2FA: React.FC<Verify2FAProps> = ({ onLoginSuccess }) => {
 
       // Redireciona para a Home
       navigate('/');
-
     } catch (err: any) {
       setMessage(err.response?.data?.message || 'Código inválido ou expirado. Tente novamente.');
     } finally {
@@ -105,8 +103,9 @@ const Verify2FA: React.FC<Verify2FAProps> = ({ onLoginSuccess }) => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors active:scale-[0.98] ${loading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+            className={`w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors active:scale-[0.98] ${
+              loading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
             {loading ? 'Verificando...' : 'Confirmar Código'}
           </button>
